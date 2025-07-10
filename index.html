@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IO56</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TE2CD8G8FK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-TE2CD8G8FK');
+    </script>
+    
+    <!-- Meta Pixel Code -->
+    <script>
+        !function(f,b,e,v,n,t,s){
+            if(f.fbq)return;
+            n=f.fbq=function(){
+                n.callMethod?
+                n.callMethod.apply(n,arguments):
+                n.queue.push(arguments)
+            };
+            if(!f._fbq)f._fbq=n;
+            n.push=n;
+            n.loaded=!0;
+            n.version='2.0';
+            n.queue=[];
+            t=b.createElement(e);
+            t.async=!0;
+            t.src=v;
+            s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)
+        }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '2839246046355731');
+        fbq('track', 'PageView');
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2839246046355731&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Meta Pixel Code -->
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Neon colors */
+        :root {
+            --neon-red: #ff0040;
+            --neon-glow: #ff0040;
+            --dark-red: #cc0000;
+        }
+
+        /* Button container with mobile fixes */
+        .logo-container {
+            cursor: pointer;
+            position: relative;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 64, 0.1));
+            
+            /* Mobile touch optimizations */
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        .logo-container:hover {
+            filter: drop-shadow(0 0 30px rgba(255, 0, 64, 0.2));
+        }
+
+        /* Base IO image - RESTORED TO WORKING STATE */
+        .logo {
+            width: clamp(180px, 25vw, 220px);
+            height: clamp(463px, 64vw, 566px);
+            background-image: url('assets/iooutline.png?v=20250708');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+            /* Default broken state - ENHANCED VISIBILITY FOR DARK SCREENS */
+            filter: brightness(0.35) saturate(0.3) contrast(1.1);
+            opacity: 0.7;
+        }
+
+        /* Individual flickering layers */
+        .flicker-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/iooutline.png?v=20250708');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* I part flickering */
+        .flicker-i {
+            clip-path: polygon(45% 27%, 55% 27%, 55% 43%, 45% 43%);
+            filter: sepia(1) saturate(5) hue-rotate(315deg) blur(0.5px) 
+                    drop-shadow(0 0 3px var(--neon-red))
+                    drop-shadow(0 0 6px var(--neon-red))
+                    drop-shadow(0 0 12px var(--neon-glow));
+        }
+
+        /* O part flickering */
+        .flicker-o {
+            clip-path: circle(15% at 50% 65%);
+            filter: sepia(1) saturate(5) hue-rotate(315deg) blur(0.5px)
+                    drop-shadow(0 0 3px var(--neon-red))
+                    drop-shadow(0 0 6px var(--neon-red))
+                    drop-shadow(0 0 12px var(--neon-glow));
+        }
+
+        /* Border flickering */
+        .flicker-border {
+            filter: sepia(1) saturate(4) hue-rotate(315deg) blur(1.2px)
+                    drop-shadow(0 0 3px var(--neon-red))
+                    drop-shadow(0 0 6px var(--neon-red));
+        }
+
+        .flicker-border-top {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 15%, 0% 15%);
+        }
+
+        .flicker-border-right {
+            clip-path: polygon(85% 0%, 100% 0%, 100% 100%, 85% 100%);
+        }
+
+        .flicker-border-bottom {
+            clip-path: polygon(0% 85%, 100% 85%, 100% 100%, 0% 100%);
+        }
+
+        .flicker-border-left {
+            clip-path: polygon(0% 0%, 15% 0%, 15% 100%, 0% 100%);
+        }
+
+        /* Intensity levels */
+        .flicker-weak {
+            filter: sepia(1) saturate(3) hue-rotate(315deg) blur(0.8px)
+                    drop-shadow(0 0 2px var(--neon-red));
+        }
+
+        .flicker-medium {
+            filter: sepia(1) saturate(4) hue-rotate(315deg) blur(0.6px)
+                    drop-shadow(0 0 3px var(--neon-red))
+                    drop-shadow(0 0 6px var(--neon-red));
+        }
+
+        .flicker-strong {
+            filter: sepia(1) saturate(5) hue-rotate(315deg) blur(0.4px)
+                    drop-shadow(0 0 4px var(--neon-red))
+                    drop-shadow(0 0 8px var(--neon-red));
+        }
+
+        /* STARTUP ANIMATION - MOBILE OPTIMIZED */
+        .logo.neon-starting {
+            animation: neonStartup 1.5s ease-out forwards !important;
+            -webkit-animation: neonStartup 1.5s ease-out forwards !important;
+        }
+
+        @keyframes neonStartup {
+            0% { 
+                filter: brightness(0.05) saturate(0.1) contrast(0.8);
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            15% { 
+                filter: brightness(0.3) saturate(0.8) contrast(1.1) 
+                       sepia(0.6) saturate(2) hue-rotate(345deg)
+                       drop-shadow(0 0 4px var(--neon-red));
+                opacity: 0.7;
+                transform: scale(1.01);
+            }
+            35% { 
+                filter: brightness(0.6) saturate(1.2) contrast(1.3)
+                       sepia(0.8) saturate(2.5) hue-rotate(345deg)
+                       drop-shadow(0 0 8px var(--neon-red))
+                       drop-shadow(0 0 15px var(--neon-red));
+                opacity: 0.85;
+                transform: scale(1.02);
+            }
+            65% { 
+                filter: brightness(0.9) saturate(1.5) contrast(1.5)
+                       sepia(0.9) saturate(3) hue-rotate(345deg)
+                       drop-shadow(0 0 10px var(--neon-red))
+                       drop-shadow(0 0 20px var(--neon-red))
+                       drop-shadow(0 0 30px var(--neon-glow));
+                opacity: 0.9;
+                transform: scale(1.03);
+            }
+            85% { 
+                filter: brightness(1.1) saturate(1.8) contrast(1.6)
+                       sepia(1) saturate(3.5) hue-rotate(345deg)
+                       drop-shadow(0 0 12px var(--neon-red))
+                       drop-shadow(0 0 25px var(--neon-red))
+                       drop-shadow(0 0 40px var(--neon-glow));
+                opacity: 0.95;
+                transform: scale(1.04);
+            }
+            100% { 
+                filter: brightness(1.0) saturate(1.8) contrast(1.6)
+                       sepia(1) saturate(3) hue-rotate(15deg)
+                       drop-shadow(0 0 6px var(--neon-red))
+                       drop-shadow(0 0 12px var(--neon-red))
+                       drop-shadow(0 0 18px var(--neon-red))
+                       drop-shadow(0 0 30px var(--neon-glow));
+                opacity: 0.7;
+                transform: scale(1.02);
+            }
+        }
+
+        /* WebKit version for iOS */
+        @-webkit-keyframes neonStartup {
+            0% { 
+                filter: brightness(0.05) saturate(0.1) contrast(0.8);
+                opacity: 0.3;
+                -webkit-transform: scale(1);
+            }
+            15% { 
+                filter: brightness(0.3) saturate(0.8) contrast(1.1) 
+                       sepia(0.6) saturate(2) hue-rotate(345deg)
+                       drop-shadow(0 0 4px var(--neon-red));
+                opacity: 0.7;
+                -webkit-transform: scale(1.01);
+            }
+            35% { 
+                filter: brightness(0.6) saturate(1.2) contrast(1.3)
+                       sepia(0.8) saturate(2.5) hue-rotate(345deg)
+                       drop-shadow(0 0 8px var(--neon-red))
+                       drop-shadow(0 0 15px var(--neon-red));
+                opacity: 0.85;
+                -webkit-transform: scale(1.02);
+            }
+            65% { 
+                filter: brightness(0.9) saturate(1.5) contrast(1.5)
+                       sepia(0.9) saturate(3) hue-rotate(345deg)
+                       drop-shadow(0 0 10px var(--neon-red))
+                       drop-shadow(0 0 20px var(--neon-red))
+                       drop-shadow(0 0 30px var(--neon-glow));
+                opacity: 0.9;
+                -webkit-transform: scale(1.03);
+            }
+            85% { 
+                filter: brightness(1.1) saturate(1.8) contrast(1.6)
+                       sepia(1) saturate(3.5) hue-rotate(345deg)
+                       drop-shadow(0 0 12px var(--neon-red))
+                       drop-shadow(0 0 25px var(--neon-red))
+                       drop-shadow(0 0 40px var(--neon-glow));
+                opacity: 0.95;
+                -webkit-transform: scale(1.04);
+            }
+            100% { 
+                filter: brightness(1.0) saturate(1.8) contrast(1.6)
+                       sepia(1) saturate(3) hue-rotate(15deg)
+                       drop-shadow(0 0 6px var(--neon-red))
+                       drop-shadow(0 0 12px var(--neon-red))
+                       drop-shadow(0 0 18px var(--neon-red))
+                       drop-shadow(0 0 30px var(--neon-glow));
+                opacity: 0.7;
+                -webkit-transform: scale(1.02);
+            }
+        }
+
+        /* Final ON state */
+        .logo.neon-on {
+            filter: brightness(1.0) saturate(1.8) contrast(1.6)
+                   sepia(1) saturate(3) hue-rotate(15deg)
+                   drop-shadow(0 0 6px var(--neon-red))
+                   drop-shadow(0 0 12px var(--neon-red))
+                   drop-shadow(0 0 18px var(--neon-red))
+                   drop-shadow(0 0 30px var(--neon-glow));
+            opacity: 0.7;
+            transform: scale(1.02);
+        }
+
+        /* Hide flicker layers when ON */
+        .logo.neon-on ~ .flicker-layer {
+            opacity: 0 !important;
+            animation: none !important;
+        }
+
+        /* Flickering animations */
+        @keyframes softRedFlicker {
+            0% { opacity: 0; }
+            5% { opacity: 0.3; }
+            10% { opacity: 0; }
+            15% { opacity: 0.7; }
+            20% { opacity: 0.2; }
+            25% { opacity: 0.9; }
+            30% { opacity: 0; }
+            40% { opacity: 0.8; }
+            50% { opacity: 0; }
+            60% { opacity: 0.5; }
+            70% { opacity: 0; }
+            80% { opacity: 0.6; }
+            90% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* Electrical buzz */
+        .electrical-buzz {
+            animation: electricalBuzz 0.08s ease-in-out;
+        }
+
+        @keyframes electricalBuzz {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-0.5px, 0.5px); }
+            20% { transform: translate(0.5px, -0.5px); }
+            30% { transform: translate(-0.5px, -0.5px); }
+            40% { transform: translate(0.5px, 0.5px); }
+            50% { transform: translate(-0.5px, 0); }
+            60% { transform: translate(0.5px, 0); }
+            70% { transform: translate(0, -0.5px); }
+            80% { transform: translate(0, 0.5px); }
+            90% { transform: translate(-0.5px, 0.5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Video container */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .video-container.show {
+            display: flex;
+        }
+
+        .video-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* End page background - still1.jpg background */
+        .still-background {
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/still1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.8s ease;
+        }
+
+        .still-background.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Full image overlay - webbutton1.png covers entire area */
+        .visual-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/webbutton1.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: all 0.3s ease;
+            filter: brightness(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        /* Invisible clickable area - positioned exactly over the box */
+        .clickable-box-area {
+            position: absolute;
+            left: 31%;
+            top: 35%;
+            width: 35.5%;
+            height: 32.5%;
+            cursor: pointer;
+            z-index: 1002;
+            /* Completely invisible - no visual styling */
+            background: transparent;
+            border: none;
+        }
+
+        .clickable-box-area:hover ~ .visual-overlay {
+            filter: brightness(1.1) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        .clickable-box-area:active ~ .visual-overlay {
+            filter: brightness(0.9);
+        }
+
+        /* Hover text overlay - positioned in center */
+        .hover-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: clamp(10px, 1.8vw, 16px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            z-index: 1003;
+        }
+
+        .clickable-box-area:hover ~ .hover-text {
+            opacity: 1;
+        }
+
+        /* Tour button */
+        .tour-button {
+            position: absolute;
+            left: 37%;
+            top: 78%;
+            width: 26%;
+            height: 4%;
+            cursor: pointer;
+            z-index: 1002;
+            background: linear-gradient(135deg, rgba(237, 28, 36, 0.1) 0%, rgba(237, 28, 36, 0.05) 100%);
+            border: 2px solid rgba(237, 28, 36, 0.4);
+            color: #ed1c24;
+            font-size: clamp(10px, 2vw, 16px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(8px, 1.5vw, 16px);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 0 15px rgba(237, 28, 36, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .tour-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(237, 28, 36, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .tour-button:hover {
+            background: linear-gradient(135deg, rgba(237, 28, 36, 0.15) 0%, rgba(237, 28, 36, 0.08) 100%);
+            border-color: rgba(237, 28, 36, 0.6);
+            color: #fff;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 
+                0 6px 20px rgba(237, 28, 36, 0.2),
+                0 0 30px rgba(237, 28, 36, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .tour-button:hover::before {
+            left: 100%;
+        }
+
+        .tour-button:active {
+            transform: translateY(0px) scale(0.99);
+        }
+
+        /* Tour button text styling */
+        .tour-button-text {
+            color: #ed1c24;
+            font-size: clamp(8px, 1.5vw, 12px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            line-height: 1.1;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(4px, 0.8vw, 8px);
+        }
+
+        .tour-button:hover .tour-button-text {
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 6px rgba(237, 28, 36, 0.4);
+        }
+
+        /* Concert ticket icon */
+        .ticket-icon {
+            width: clamp(12px, 2vw, 16px);
+            height: clamp(8px, 1.3vw, 11px);
+            background: #ed1c24;
+            border-radius: 2px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        /* Ticket perforations */
+        .ticket-icon::before {
+            content: '';
+            position: absolute;
+            left: 35%;
+            top: -1px;
+            bottom: -1px;
+            width: 1px;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 1px,
+                #000 1px,
+                #000 2px
+            );
+        }
+
+        /* Ticket stub notch */
+        .ticket-icon::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 3px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        .tour-button:hover .ticket-icon {
+            background: #fff;
+            box-shadow: 0 0 4px rgba(237, 28, 36, 0.4);
+        }
+
+        .tour-button:hover .ticket-icon::before {
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 1px,
+                #ed1c24 1px,
+                #ed1c24 2px
+            );
+        }
+
+        /* Skip button */
+        .skip-button {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 1004;
+            opacity: 0;
+            visibility: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .skip-button.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .skip-button:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .skip-button:active {
+            transform: translateY(0px);
+        }
+
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            .logo-container {
+                touch-action: manipulation !important;
+                -webkit-tap-highlight-color: transparent !important;
+                -webkit-touch-callout: none !important;
+                -webkit-user-select: none !important;
+                user-select: none !important;
+            }
+            
+            .logo {
+                transform: translateZ(0);
+                will-change: filter, opacity, transform;
+            }
+            
+            .logo.neon-starting {
+                -webkit-animation: neonStartup 1.5s ease-out forwards !important;
+                animation: neonStartup 1.5s ease-out forwards !important;
+            }
+            
+            .flicker-layer {
+                transform: translateZ(0);
+                will-change: opacity, animation;
+            }
+            
+            .logo-container:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+            
+            .skip-button {
+                bottom: 80px;
+                right: 15px;
+                font-size: 11px;
+                padding: 6px 12px;
+                touch-action: manipulation;
+            }
+        }
+
+        /* Touch-specific styles */
+        @media (hover: none) and (pointer: coarse) {
+            .logo-container {
+                cursor: default;
+            }
+            
+            .logo-container:hover {
+                filter: drop-shadow(0 0 20px rgba(255, 0, 64, 0.1));
+            }
+        }
+
+        /* Click here arrow pointing to pre-order button */
+        .click-here-arrow {
+            position: absolute;
+            left: 50%;
+            top: 55%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 1004;
+            pointer-events: none;
+        }
+
+        .click-here-arrow.show {
+            opacity: 0.8;
+            visibility: visible;
+        }
+
+        /* Arrow flickering effects - similar to power button */
+        .click-here-arrow.flicker-weak {
+            filter: drop-shadow(0 0 2px var(--dark-red))
+                    drop-shadow(0 0 4px var(--dark-red));
+        }
+
+        .click-here-arrow.flicker-medium {
+            filter: drop-shadow(0 0 3px var(--dark-red))
+                    drop-shadow(0 0 6px var(--dark-red))
+                    drop-shadow(0 0 9px var(--dark-red));
+        }
+
+        .click-here-arrow.flicker-strong {
+            filter: drop-shadow(0 0 4px var(--dark-red))
+                    drop-shadow(0 0 8px var(--dark-red))
+                    drop-shadow(0 0 12px var(--dark-red));
+        }
+
+        .click-here-arrow::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 14px solid var(--dark-red);
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+        }
+
+        .click-here-text {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--dark-red);
+            font-size: clamp(10px, 1.2vw, 14px);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 10px;
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(204, 0, 0, 0.4);
+        }
+
+        /* Removed bounce animation - replaced with flickering */
+
+        /* Mobile adjustments for arrow */
+        @media (max-width: 768px) {
+            .click-here-arrow {
+                left: 50%;
+                top: 53%;
+            }
+            
+            .click-here-arrow::before {
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-bottom: 12px solid var(--dark-red);
+            }
+            
+            .click-here-text {
+                font-size: 9px;
+                padding: 4px 8px;
+                top: 20px;
+            }
+        }
+
+        /* Safe area support */
+        @supports (bottom: env(safe-area-inset-bottom)) {
+            .skip-button {
+                bottom: calc(60px + env(safe-area-inset-bottom));
+                right: calc(20px + env(safe-area-inset-right));
+            }
+            
+            @media (max-width: 768px) {
+                .skip-button {
+                    bottom: calc(80px + env(safe-area-inset-bottom));
+                    right: calc(15px + env(safe-area-inset-right));
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container" id="logoContainer">
+        <div class="logo" id="logo"></div>
+        
+        <!-- Flickering layers -->
+        <div class="flicker-layer flicker-i" id="flickerI"></div>
+        <div class="flicker-layer flicker-o" id="flickerO"></div>
+        
+        <!-- Border flickering layers -->
+        <div class="flicker-layer flicker-border flicker-border-top" id="flickerBorderTop"></div>
+        <div class="flicker-layer flicker-border flicker-border-right" id="flickerBorderRight"></div>
+        <div class="flicker-layer flicker-border flicker-border-bottom" id="flickerBorderBottom"></div>
+        <div class="flicker-layer flicker-border flicker-border-left" id="flickerBorderLeft"></div>
+    </div>
+
+    <div class="video-container" id="videoContainer">
+        <div class="video-wrapper">
+            <iframe 
+                id="videoFrame" 
+                src="" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+                allowfullscreen>
+            </iframe>
+            <div class="still-background" id="stillBackground">
+                <!-- Invisible clickable area positioned over the box -->
+                <div class="clickable-box-area" id="clickableBox" onclick="handlePreOrder()" title="Click to pre-order your IO-56"></div>
+                
+                <!-- Full image overlay for visual effect -->
+                <div class="visual-overlay"></div>
+                
+                <!-- Hover text -->
+                <div class="hover-text">Pre-Order<br>Now</div>
+                
+                <button class="tour-button" onclick="handleTour()" title="Book your consultation">
+                    <span class="tour-button-text">
+                        <span class="ticket-icon"></span>
+                        <span>Book your<br>consultation</span>
+                    </span>
+                </button>
+                
+                <!-- Click here arrow pointing to pre-order button -->
+                <div class="click-here-arrow" id="clickHereArrow">
+                    <div class="click-here-text">Click here</div>
+                </div>
+            </div>
+            <button class="skip-button" id="skipButton" onclick="skipToPreOrder()" title="Skip to pre-order">Skip</button>
+        </div>
+    </div>
+
+    <script>
+        // RESTORED WORKING POWER BUTTON WITH MOBILE FIXES
+        const logoContainer = document.getElementById('logoContainer');
+        const logo = document.getElementById('logo');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoFrame = document.getElementById('videoFrame');
+        const stillBackground = document.getElementById('stillBackground');
+        const skipButton = document.getElementById('skipButton');
+        const clickHereArrow = document.getElementById('clickHereArrow');
+
+        // Flickering elements
+        const flickerI = document.getElementById('flickerI');
+        const flickerO = document.getElementById('flickerO');
+        const borderElements = [
+            document.getElementById('flickerBorderTop'),
+            document.getElementById('flickerBorderRight'),
+            document.getElementById('flickerBorderBottom'),
+            document.getElementById('flickerBorderLeft')
+        ];
+
+        // Global state
+        let isActivated = false;
+        let videoEnded = false;
+        let player = null;
+        let playerReady = false;
+        let skipButtonTimeout = null;
+        let userClickedLink = false;
+        let clickHereArrowTimeout = null;
+        
+        // Flickering state
+        let autoFlickerEnabled = true;
+        let iTimer = null, oTimer = null, borderTimer = null;
+        let arrowFlickerTimer = null;
+        let isHovering = false;
+        let isNeonOn = false;
+        let isArrowFlickering = false;
+        
+        const I_FLICKER_DELAY = { min: 100, max: 600 };
+        const O_FLICKER_DELAY = { min: 80, max: 500 };
+        const BORDER_FLICKER_DELAY = { min: 50, max: 300 };
+        const ARROW_FLICKER_DELAY = { min: 800, max: 2000 };
+        const INTENSITIES = ['weak', 'medium', 'strong'];
+
+        // Device detection
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform)) ||
+                   ('ontouchstart' in window) ||
+                   (navigator.maxTouchPoints > 0);
+        }
+
+        function isSafari() {
+            return /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+                   /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        function isIOSDevice() {
+            return /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        // POWER BUTTON ACTIVATION
+        function handlePowerButtonActivation() {
+            if (isActivated) {
+                console.log('⚠️ Already activated');
+                return;
+            }
+            
+            console.log('🔥 POWER BUTTON ACTIVATION!');
+            console.log('📱 Device info:', {
+                isMobile: isMobileDevice(),
+                isIOS: isIOSDevice(),
+                isSafari: isSafari(),
+                touchPoints: navigator.maxTouchPoints || 0
+            });
+            
+            isActivated = true;
+            isNeonOn = true;
+
+            // Clear all existing animations
+            clearFlickerTimers();
+            flickerI.style.animation = 'none';
+            flickerO.style.animation = 'none';
+            borderElements.forEach(border => {
+                border.style.animation = 'none';
+            });
+            logo.classList.remove('neon-on');
+            logoContainer.classList.remove('electrical-buzz');
+
+            // Play sound (non-blocking)
+            try {
+                const powerOnSound = new Audio('assets/poweron.wav');
+                powerOnSound.volume = 0.7;
+                powerOnSound.play().catch(e => {
+                    console.log('📢 Audio failed:', e.message);
+                });
+            } catch (e) {
+                console.log('📢 Audio error:', e.message);
+            }
+
+            // Start animation
+            console.log('⚡ Starting neon animation');
+            logo.offsetHeight; // Force reflow
+            logo.classList.add('neon-starting');
+            
+            // Complete after 1.5 seconds
+            setTimeout(() => {
+                console.log('🌟 Animation completing');
+                logo.classList.remove('neon-starting');
+                logo.classList.add('neon-on');
+            }, 1500);
+
+            // Show video after 2.5 seconds
+            setTimeout(() => {
+                console.log('🎬 Starting video transition');
+                logoContainer.style.display = 'none';
+                videoContainer.classList.add('show');
+                
+                if (isSafari()) {
+                    setTimeout(showSkipButton, 500);
+                }
+                
+                videoContainer.addEventListener('mousemove', handleVideoMouseMove);
+                videoContainer.addEventListener('touchstart', handleVideoMouseMove);
+                
+                const videoId = '2guPWOEgs_I';
+                
+                if (!window.YT) {
+                    console.log('🎥 Loading YouTube API');
+                    const tag = document.createElement('script');
+                    tag.src = 'https://www.youtube.com/iframe_api';
+                    document.head.appendChild(tag);
+                    
+                    window.onYouTubeIframeAPIReady = function() {
+                        console.log('🎥 YouTube API ready');
+                        createYouTubePlayer(videoId);
+                        setTimeout(showSkipButton, 2000);
+                    };
+                } else if (window.YT && window.YT.Player) {
+                    console.log('🎥 YouTube API already loaded');
+                    createYouTubePlayer(videoId);
+                    setTimeout(showSkipButton, 2000);
+                } else {
+                    console.log('🎥 YouTube API loading');
+                    window.onYouTubeIframeAPIReady = function() {
+                        console.log('🎥 YouTube API ready (delayed)');
+                        createYouTubePlayer(videoId);
+                        setTimeout(showSkipButton, 2000);
+                    };
+                }
+            }, 2500);
+        }
+
+        // SIMPLE EVENT HANDLING
+        let isProcessing = false;
+        
+        function handleClick() {
+            if (isActivated || isProcessing) {
+                console.log('⚠️ Already activated or processing');
+                return;
+            }
+            
+            console.log('🚀 CLICK DETECTED');
+            isProcessing = true;
+            handlePowerButtonActivation();
+        }
+        
+        // Desktop click
+        logoContainer.addEventListener('click', handleClick);
+        
+        // Mobile touch - SIMPLE VERSION WITH MOBILE FIXES
+        logoContainer.addEventListener('touchend', function(event) {
+            if (isActivated || isProcessing) {
+                event.preventDefault();
+                return;
+            }
+            
+            console.log('📱 Touch end');
+            event.preventDefault();
+            event.stopPropagation();
+            handleClick();
+        }, { passive: false });
+        
+        // Prevent context menu
+        logoContainer.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+        
+        // Hover handling for desktop
+        if (!isMobileDevice()) {
+            logoContainer.addEventListener('mouseenter', function() {
+                isHovering = true;
+                
+                if (!isNeonOn && autoFlickerEnabled) {
+                    scheduleBorderFlicker();
+                    
+                    if (iTimer) {
+                        clearTimeout(iTimer);
+                        scheduleIFlicker();
+                    }
+                    if (oTimer) {
+                        clearTimeout(oTimer);
+                        scheduleOFlicker();
+                    }
+                }
+            });
+
+            logoContainer.addEventListener('mouseleave', function() {
+                isHovering = false;
+                
+                if (borderTimer) {
+                    clearTimeout(borderTimer);
+                    borderTimer = null;
+                }
+            });
+        }
+
+        // FLICKER FUNCTIONS - RESTORED
+        function executePartFlicker(partName, element) {
+            if (isNeonOn) return;
+            
+            const intensity = INTENSITIES[Math.floor(Math.random() * INTENSITIES.length)];
+            const duration = Math.random() * 400 + 150;
+            
+            element.className = `flicker-layer flicker-${partName} flicker-${intensity}`;
+            element.style.animation = `softRedFlicker ${duration}ms ease-in-out`;
+            
+            if (Math.random() < 0.5) {
+                logoContainer.classList.add('electrical-buzz');
+                setTimeout(() => {
+                    logoContainer.classList.remove('electrical-buzz');
+                }, 80);
+            }
+            
+            setTimeout(() => {
+                element.style.animation = '';
+                element.className = `flicker-layer flicker-${partName}`;
+            }, duration);
+        }
+
+        function scheduleIFlicker() {
+            if (!autoFlickerEnabled || isNeonOn) return;
+            const delay = Math.random() * (I_FLICKER_DELAY.max - I_FLICKER_DELAY.min) + I_FLICKER_DELAY.min;
+            iTimer = setTimeout(() => {
+                if (autoFlickerEnabled && !isNeonOn) {
+                    executePartFlicker('i', flickerI);
+                    scheduleIFlicker();
+                }
+            }, delay);
+        }
+
+        function scheduleOFlicker() {
+            if (!autoFlickerEnabled || isNeonOn) return;
+            const delay = Math.random() * (O_FLICKER_DELAY.max - O_FLICKER_DELAY.min) + O_FLICKER_DELAY.min;
+            oTimer = setTimeout(() => {
+                if (autoFlickerEnabled && !isNeonOn) {
+                    executePartFlicker('o', flickerO);
+                    scheduleOFlicker();
+                }
+            }, delay);
+        }
+
+        function scheduleBorderFlicker() {
+            if (!autoFlickerEnabled || isNeonOn || !isHovering) return;
+            const delay = Math.random() * (BORDER_FLICKER_DELAY.max - BORDER_FLICKER_DELAY.min) + BORDER_FLICKER_DELAY.min;
+            borderTimer = setTimeout(() => {
+                if (autoFlickerEnabled && !isNeonOn && isHovering) {
+                    triggerBorder();
+                    scheduleBorderFlicker();
+                }
+            }, delay);
+        }
+
+        function triggerBorder() {
+            const randomBorder = borderElements[Math.floor(Math.random() * borderElements.length)];
+            const intensity = INTENSITIES[Math.floor(Math.random() * INTENSITIES.length)];
+            const duration = Math.random() * 400 + 150;
+            
+            randomBorder.className += ` flicker-${intensity}`;
+            randomBorder.style.animation = `softRedFlicker ${duration}ms ease-in-out`;
+            
+            setTimeout(() => {
+                randomBorder.style.animation = '';
+                randomBorder.className = randomBorder.className.replace(` flicker-${intensity}`, '');
+            }, duration);
+        }
+
+        function clearFlickerTimers() {
+            if (iTimer) clearTimeout(iTimer);
+            if (oTimer) clearTimeout(oTimer);
+            if (borderTimer) clearTimeout(borderTimer);
+            if (arrowFlickerTimer) clearTimeout(arrowFlickerTimer);
+            iTimer = oTimer = borderTimer = arrowFlickerTimer = null;
+        }
+
+        // ARROW FLICKERING FUNCTIONS
+        function executeArrowFlicker() {
+            if (!isArrowFlickering || userClickedLink) return;
+            
+            const intensity = INTENSITIES[Math.floor(Math.random() * INTENSITIES.length)];
+            const duration = Math.random() * 300 + 200;
+            
+            // Apply flicker class
+            clickHereArrow.className = `click-here-arrow show flicker-${intensity}`;
+            clickHereArrow.style.animation = `softRedFlicker ${duration}ms ease-in-out`;
+            
+            // Remove flicker class after animation
+            setTimeout(() => {
+                if (clickHereArrow.classList.contains('show')) {
+                    clickHereArrow.className = 'click-here-arrow show';
+                    clickHereArrow.style.animation = '';
+                }
+            }, duration);
+        }
+
+        function scheduleArrowFlicker() {
+            if (!isArrowFlickering || userClickedLink) return;
+            
+            const delay = Math.random() * (ARROW_FLICKER_DELAY.max - ARROW_FLICKER_DELAY.min) + ARROW_FLICKER_DELAY.min;
+            arrowFlickerTimer = setTimeout(() => {
+                if (isArrowFlickering && !userClickedLink) {
+                    executeArrowFlicker();
+                    scheduleArrowFlicker();
+                }
+            }, delay);
+        }
+
+        function startArrowFlickering() {
+            isArrowFlickering = true;
+            scheduleArrowFlicker();
+            console.log('✨ Arrow flickering started');
+        }
+
+        function stopArrowFlickering() {
+            isArrowFlickering = false;
+            if (arrowFlickerTimer) {
+                clearTimeout(arrowFlickerTimer);
+                arrowFlickerTimer = null;
+            }
+            // Clear any active animation
+            if (clickHereArrow.classList.contains('show')) {
+                clickHereArrow.className = 'click-here-arrow show';
+                clickHereArrow.style.animation = '';
+            }
+            console.log('✨ Arrow flickering stopped');
+        }
+
+        // VIDEO FUNCTIONS
+        function showSkipButton() {
+            if (videoEnded) return;
+            skipButton.classList.add('show');
+            if (skipButtonTimeout) clearTimeout(skipButtonTimeout);
+            skipButtonTimeout = setTimeout(() => {
+                skipButton.classList.remove('show');
+            }, 3000);
+        }
+
+        function hideSkipButton() {
+            skipButton.classList.remove('show');
+            if (skipButtonTimeout) {
+                clearTimeout(skipButtonTimeout);
+                skipButtonTimeout = null;
+            }
+        }
+
+        function handleVideoMouseMove() {
+            if (videoEnded) return;
+            showSkipButton();
+        }
+
+        function handleVideoEnd() {
+            if (videoEnded) return;
+            videoEnded = true;
+            hideSkipButton();
+            
+            const ytPlayerDiv = document.getElementById('ytPlayer');
+            if (ytPlayerDiv) {
+                ytPlayerDiv.style.opacity = '0';
+                ytPlayerDiv.style.transition = 'opacity 0.5s ease';
+            }
+            
+            setTimeout(() => {
+                stillBackground.classList.add('show');
+                // Show click here arrow immediately
+                showClickHereArrow();
+            }, 500);
+        }
+
+        function startClickHereArrowTimer() {
+            // Function kept for compatibility but no longer used
+            if (userClickedLink) return;
+            showClickHereArrow();
+        }
+
+        function showClickHereArrow() {
+            if (userClickedLink) return;
+            clickHereArrow.classList.add('show');
+            startArrowFlickering();
+            console.log('🔍 Showing click here arrow with flickering');
+        }
+
+        function hideClickHereArrow() {
+            stopArrowFlickering();
+            clickHereArrow.classList.remove('show');
+            if (clickHereArrowTimeout) {
+                clearTimeout(clickHereArrowTimeout);
+                clickHereArrowTimeout = null;
+            }
+            console.log('🔍 Hiding click here arrow and stopping flickering');
+        }
+
+        function skipToPreOrder() {
+            hideSkipButton();
+            if (player && player.pauseVideo) {
+                player.pauseVideo();
+                player.mute();
+            }
+            handleVideoEnd();
+        }
+
+        // YOUTUBE API FUNCTIONS
+        function onYouTubeIframeAPIReady() {
+            console.log('YouTube API is ready');
+        }
+
+        function onPlayerReady(event) {
+            playerReady = true;
+            showSkipButton();
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                showSkipButton();
+            } else if (event.data === YT.PlayerState.ENDED) {
+                handleVideoEnd();
+            }
+        }
+
+        function createYouTubePlayer(videoId) {
+            if (isSafari()) {
+                showSkipButton();
+            }
+            
+            const videoWrapper = document.querySelector('.video-wrapper');
+            videoFrame.style.display = 'none';
+            
+            const playerDiv = document.createElement('div');
+            playerDiv.id = 'ytPlayer';
+            playerDiv.style.width = '100%';
+            playerDiv.style.height = '100%';
+            playerDiv.style.position = 'absolute';
+            playerDiv.style.top = '0';
+            playerDiv.style.left = '0';
+            videoWrapper.insertBefore(playerDiv, stillBackground);
+            
+            player = new YT.Player('ytPlayer', {
+                width: '100%',
+                height: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'showinfo': 0,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'iv_load_policy': 3,
+                    'cc_load_policy': 0,
+                    'fs': 0,
+                    'disablekb': 1,
+                    'playsinline': 1,
+                    'mute': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // BUTTON HANDLERS
+        function handlePreOrder() {
+            userClickedLink = true;
+            hideClickHereArrow();
+            console.log('🛒 Pre-order button clicked');
+            window.open('https://ten56.lnk.to/I-O', '_blank');
+        }
+
+        function handleTour() {
+            userClickedLink = true;
+            hideClickHereArrow();
+            console.log('🎫 Tour button clicked');
+            window.open('https://bnds.us/xcotv3', '_blank');
+        }
+
+        // INITIALIZATION
+        console.log('🚀 RESTORED Working Power Button with Mobile Fixes');
+        console.log('📱 Device Detection:', {
+            mobile: isMobileDevice(),
+            iOS: isIOSDevice(),
+            safari: isSafari(),
+            touchPoints: navigator.maxTouchPoints || 0
+        });
+        
+        // Test PNG loading
+        const testImg = new Image();
+        testImg.onload = function() {
+            console.log('✅ PNG loaded successfully:', testImg.width, 'x', testImg.height);
+        };
+        testImg.onerror = function() {
+            console.error('❌ PNG failed to load!');
+        };
+        testImg.src = 'assets/iooutline.png?v=20250708';
+        
+        // Start flickering
+        if (autoFlickerEnabled) {
+            scheduleIFlicker();
+            scheduleOFlicker();
+        }
+        
+        console.log('✅ Working power button restored and ready');
+    </script>
+</body>
+</html>
