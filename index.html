@@ -858,6 +858,14 @@
             document.getElementById('flickerBorderLeft')
         ];
 
+        // SESSION ID INITIALIZATION FOR GA4 TRACKING
+        if (!sessionStorage.getItem('session_id')) {
+            sessionStorage.setItem('session_id', 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+        }
+        
+        // Page load time for timing analysis
+        window.pageLoadTime = Date.now();
+
         // Global state
         let isActivated = false;
         let videoEnded = false;
@@ -905,6 +913,34 @@
                 console.log('⚠️ Already activated');
                 return;
             }
+            
+            // Track power button click in GA4
+            gtag('event', 'button_click', {
+                event_category: 'engagement',
+                event_label: 'power_click',
+                button_name: 'power_button',
+                page_location: window.location.href,
+                user_agent: navigator.userAgent,
+                device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                timestamp: new Date().toISOString(),
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track engagement timing
+            gtag('event', 'timing_complete', {
+                name: 'time_to_power_activation',
+                value: Date.now() - window.pageLoadTime,
+                event_category: 'user_engagement',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track as engagement event for funnel analysis
+            gtag('event', 'engagement', {
+                event_category: 'user_journey',
+                event_label: 'power_button_activated',
+                engagement_time_msec: Date.now() - window.performance.timing.navigationStart,
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
             
             console.log('🔥 POWER BUTTON ACTIVATION!');
             console.log('📱 Device info:', {
@@ -955,6 +991,16 @@
                 console.log('🎬 Starting video transition');
                 logoContainer.style.display = 'none';
                 videoContainer.classList.add('show');
+                
+                // Track video start
+                gtag('event', 'video_start', {
+                    event_category: 'video_engagement',
+                    event_label: 'youtube_video_started',
+                    video_title: 'Ten56 IO Promotional Video',
+                    video_duration: 137,
+                    device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                    session_id: sessionStorage.getItem('session_id') || 'anonymous'
+                });
                 
                 if (isSafari()) {
                     setTimeout(showSkipButton, 500);
@@ -1213,6 +1259,25 @@
             videoEnded = true;
             hideSkipButton();
             
+            // Track video completion in GA4
+            gtag('event', 'video_complete', {
+                event_category: 'video_engagement',
+                event_label: 'youtube_video_completed',
+                video_title: 'Ten56 IO Promotional Video',
+                video_duration: 137,
+                video_provider: 'youtube',
+                device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track when user reaches CTA stage
+            gtag('event', 'engagement', {
+                event_category: 'user_journey',
+                event_label: 'reached_cta_stage',
+                engagement_time_msec: Date.now() - window.performance.timing.navigationStart,
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
             const ytPlayerDiv = document.getElementById('ytPlayer');
             if (ytPlayerDiv) {
                 ytPlayerDiv.style.opacity = '0';
@@ -1223,6 +1288,9 @@
                 stillBackground.classList.add('show');
                 // Show click here arrow immediately
                 showClickHereArrow();
+                
+                // Set time for measuring time-to-action
+                window.videoEndTime = Date.now();
             }, 500);
         }
 
@@ -1251,6 +1319,19 @@
 
         function skipToPreOrder() {
             hideSkipButton();
+            
+            // Track video skip in GA4
+            const currentTime = player ? Math.floor(player.getCurrentTime()) : 0;
+            gtag('event', 'video_skip', {
+                event_category: 'video_engagement',
+                event_label: 'youtube_video_skipped',
+                video_current_time: currentTime,
+                video_duration: 137,
+                skip_percentage: Math.round((currentTime / 137) * 100),
+                device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
             if (player && player.pauseVideo) {
                 player.pauseVideo();
                 player.mute();
@@ -1322,14 +1403,105 @@
         function handlePreOrder() {
             userClickedLink = true;
             hideClickHereArrow();
-            console.log('🛒 Pre-order button clicked');
+            // Track pre-order button click in GA4
+            gtag('event', 'button_click', {
+                event_category: 'conversion',
+                event_label: 'preorder_click',
+                button_name: 'preorder',
+                page_location: window.location.href,
+                user_agent: navigator.userAgent,
+                device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                timestamp: new Date().toISOString(),
+                destination_url: 'https://ten56.lnk.to/I-O',
+                user_journey_step: 'video_completion',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track as conversion event
+            gtag('event', 'conversion', {
+                event_category: 'ecommerce',
+                event_label: 'preorder_intent',
+                value: 1,
+                currency: 'USD',
+                items: [{
+                    item_id: 'IO-56',
+                    item_name: 'Ten56 IO Album',
+                    item_category: 'Music',
+                    quantity: 1
+                }],
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track click-through to external site
+            gtag('event', 'click', {
+                event_category: 'outbound',
+                event_label: 'ten56_preorder_link',
+                transport_type: 'beacon',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track time to action if video ended
+            if (window.videoEndTime) {
+                gtag('event', 'timing_complete', {
+                    name: 'time_to_action_after_video',
+                    value: Date.now() - window.videoEndTime,
+                    event_category: 'user_engagement',
+                    action_type: 'preorder',
+                    session_id: sessionStorage.getItem('session_id') || 'anonymous'
+                });
+            }
+            
+            console.log('🛒 Pre-order button clicked - GA4 tracked');
             window.open('https://ten56.lnk.to/I-O', '_blank');
         }
 
         function handleTour() {
             userClickedLink = true;
             hideClickHereArrow();
-            console.log('🎫 Tour button clicked');
+            
+            // Track tour button click in GA4
+            gtag('event', 'button_click', {
+                event_category: 'engagement', 
+                event_label: 'tour_click',
+                button_name: 'tour',
+                page_location: window.location.href,
+                user_agent: navigator.userAgent,
+                device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                timestamp: new Date().toISOString(),
+                destination_url: 'https://bnds.us/xcotv3',
+                user_journey_step: 'video_completion',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track as lead generation event
+            gtag('event', 'generate_lead', {
+                event_category: 'lead_generation',
+                event_label: 'consultation_booking',
+                currency: 'USD',
+                value: 50, // Estimate consultation value
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track click-through to external site
+            gtag('event', 'click', {
+                event_category: 'outbound',
+                event_label: 'consultation_booking_link',
+                transport_type: 'beacon',
+                session_id: sessionStorage.getItem('session_id') || 'anonymous'
+            });
+            
+            // Track time to action if video ended
+            if (window.videoEndTime) {
+                gtag('event', 'timing_complete', {
+                    name: 'time_to_action_after_video',
+                    value: Date.now() - window.videoEndTime,
+                    event_category: 'user_engagement',
+                    action_type: 'consultation',
+                    session_id: sessionStorage.getItem('session_id') || 'anonymous'
+                });
+            }
+            
+            console.log('🎫 Tour button clicked - GA4 tracked');
             window.open('https://bnds.us/xcotv3', '_blank');
         }
 
@@ -1359,6 +1531,25 @@
         }
         
         console.log('✅ Working power button restored and ready');
+        
+        // PAGE PERFORMANCE TRACKING
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const navigation = performance.getEntriesByType('navigation')[0];
+                const paintEntries = performance.getEntriesByType('paint');
+                
+                gtag('event', 'page_performance', {
+                    event_category: 'performance',
+                    page_load_time: Math.round(navigation.loadEventEnd - navigation.fetchStart),
+                    dom_content_loaded: Math.round(navigation.domContentLoadedEventEnd - navigation.fetchStart),
+                    first_paint: paintEntries.find(entry => entry.name === 'first-paint')?.startTime || 0,
+                    device_type: isMobileDevice() ? 'mobile' : 'desktop',
+                    session_id: sessionStorage.getItem('session_id') || 'anonymous'
+                });
+                
+                console.log('📈 Page performance tracked');
+            }, 0);
+        });
     </script>
 </body>
 </html>
